@@ -20,7 +20,7 @@ module VagrantPlugins
       description <<-DESC
       The reload plugin allows a VM to be reloaded as a provisioning step.
       DESC
-      
+
       provisioner "reload" do
         class ReloadProvisioner < Vagrant.plugin("2", :provisioner)
 
@@ -34,7 +34,10 @@ module VagrantPlugins
           def provision
             options = {}
             options[:provision_ignore_sentinel] = false
-            @machine.action(:reload, options)
+            @machine.action(:halt, options)
+            @machine.env.ui.info "Pausing to reload"
+            sleep 5
+            @machine.action(:up, options)
             begin
               sleep 10
             end until @machine.communicate.ready?
@@ -50,4 +53,3 @@ module VagrantPlugins
     end
   end
 end
-
